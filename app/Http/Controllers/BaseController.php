@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
 use Illuminate\Http\Request;

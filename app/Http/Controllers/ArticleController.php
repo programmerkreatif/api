@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
-use App\Http\Controllers\API\BaseController;
+use App\Http\Controllers\BaseController as BaseController;
+
 use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Services\ArticleService;
