@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::controller(AuthController::class)->group(function(){
-    Route::post('signin', 'login');
+    Route::post('auth-signin', 'login');
 });
         
 Route::middleware('auth:sanctum')->group( function () {

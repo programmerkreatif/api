@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\HttpStatus;
 use Illuminate\Foundation\Http\FormRequest;
-
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
 class ArticleRequest extends FormRequest
 {
     /**
@@ -14,6 +16,15 @@ class ArticleRequest extends FormRequest
     public function authorize()
     {
         return true;
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'success'   => false,
+            'message'   => 'Validation errors',
+            'data'      => $validator->errors()
+        ],HttpStatus::HTTP_BAD_REQUEST));
     }
 
     /**
