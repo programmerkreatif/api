@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ArticleRequest;
 use App\Service\ArticleService;
 use Exception;
+use Illuminate\Http\JsonResponse;
 
 class ArticleController extends BaseController
 {
@@ -113,7 +114,7 @@ class ArticleController extends BaseController
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function update(ArticleRequest $request, Article $article)
+    public function update(ArticleRequest $request, Article $article): JsonResponse
     {
         try {
             $user = Auth::user();
@@ -138,7 +139,7 @@ class ArticleController extends BaseController
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Article $article)
+    public function destroy(Article $article): JsonResponse
     {
         try {
 
