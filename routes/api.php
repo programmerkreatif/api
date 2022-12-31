@@ -19,7 +19,4 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('auth-signin', 'login');
 });
         
-Route::middleware('auth:sanctum')->group( function () {
-    Route::resource('articles', ArticleController::class);
-});
 
