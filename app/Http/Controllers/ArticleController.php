@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Enums\HttpStatus;
 use App\Http\Controllers\BaseController as BaseController;
-
+use Illuminate\Support\Facades\Auth;
 use App\Models\Article;
 use Illuminate\Http\Request;
-use App\Services\ArticleService;
 use App\Http\Requests\ArticleRequest;
+use App\Service\ArticleService;
 use Exception;
 
 class ArticleController extends BaseController
@@ -19,6 +19,8 @@ class ArticleController extends BaseController
      * @var articleService
      */
     protected $articleService;
+    protected $userSession;
+
 
      /**
      * PostController Constructor
@@ -28,7 +30,9 @@ class ArticleController extends BaseController
      */
     public function __construct(ArticleService $articleService)
     {
+        $user = Auth::user();
         $this->articleService = $articleService;
+        $this->userSession = $user;
     }
 
 
@@ -66,8 +70,12 @@ class ArticleController extends BaseController
     public function store(ArticleRequest $request)
     {
         try {
-            $data = $this->articleService->saveArticleData($request);
-            return $this->successResponse($data, 'Article has been saved');
+            if ($this->userSession->can('create', Article::class)) {
+                $data = $this->articleService->saveArticleData($request);
+                return $this->successResponse($data, 'Article has been saved');
+            } else {
+                return $this->errorResponse("You don't have access to create article", $e->getMessage(), HttpStatus::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $e) {
             return $this->errorResponse('Error', $e->getMessage(), HttpStatus::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -110,12 +118,16 @@ class ArticleController extends BaseController
     public function update(ArticleRequest $request, Article $article)
     {
         try {
-            $check = $this->articleService->getById($article->id);
-            if ( !empty($check) ) {
-                $data = $this->articleService->updateArticle($request);
-                return $this->successResponse($data, 'Success updated article data');
+            if ($this->userSession->can('create', Article::class)) {
+                $check = $this->articleService->getById($article->id);
+                if ( !empty($check) ) {
+                    $data = $this->articleService->updateArticle($request);
+                    return $this->successResponse($data, 'Success updated article data');
+                } else {
+                    return $this->errorResponse('Data Invalid', null, HttpStatus::HTTP_NOT_FOUND);
+                }
             } else {
-                return $this->errorResponse('Data Invalid', null, HttpStatus::HTTP_NOT_FOUND);
+                return $this->errorResponse("You don't have access to create article", $e->getMessage(), HttpStatus::HTTP_UNAUTHORIZED);
             }
         } catch (Exception $e) {
             return $this->errorResponse('Error', $e->getMessage(), HttpStatus::HTTP_INTERNAL_SERVER_ERROR);

@@ -10,7 +10,7 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|exists:users,email|max:50',
+            'email' => 'required|email',
             'password'=> 'required',
         ];
     }
@@ -22,6 +22,7 @@ class LoginRequest extends FormRequest
             'data'      => $validator->errors()
         ],HttpStatus::HTTP_BAD_REQUEST));
     }
+    
     public function messages() //OPTIONAL
     {
         return [

@@ -24,7 +24,7 @@ class AuthController extends BaseController
             $user = Auth::user(); 
             $success['token'] =  $user->createToken('MyApp')->plainTextToken; 
             $success['name'] =  $user->name;
-            // return $this->successResponse($success, 'User login successfully.');
+            return $this->successResponse($success, 'User login successfully.');
         } 
         else{ 
             return $this->errorResponse('Unauthorised.', ['error'=>'Unauthorised'],HttpStatus::HTTP_UNAUTHORIZED);
