@@ -69,7 +69,7 @@ class ArticleRepository
     public function update($data, $id)
     {
         
-        $article = $this->Article->find($id);
+        $article = $this->article->find($id);
         $article->title = $data['title'];
         $article->description = $data['description'];
         $article->update();
@@ -84,7 +84,7 @@ class ArticleRepository
      */
     public function delete($id)
     {
-        $article = $this->Article->find($id);
+        $article = $this->article->find($id);
         $article->delete();
         return $article;
     }

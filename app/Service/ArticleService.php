@@ -79,14 +79,14 @@ class ArticleService
     public function updateArticle($data, $id)
     {
         DB::beginTransaction();
-        try {
+        // try {
             $post = $this->articleRepository->update($data, $id);
 
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException('Unable to update article data');
-        }
+        // } catch (Exception $e) {
+        //     DB::rollBack();
+        //     Log::info($e->getMessage());
+        //     throw new InvalidArgumentException('Unable to update article data');
+        // }
 
         DB::commit();
         return $post;

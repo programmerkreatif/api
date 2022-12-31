@@ -19,7 +19,6 @@ class ArticleController extends BaseController
      * @var articleService
      */
     protected $articleService;
-    protected $userSession;
 
 
      /**
@@ -30,9 +29,7 @@ class ArticleController extends BaseController
      */
     public function __construct(ArticleService $articleService)
     {
-        $user = Auth::user();
         $this->articleService = $articleService;
-        $this->userSession = $user;
     }
 
 
@@ -70,11 +67,12 @@ class ArticleController extends BaseController
     public function store(ArticleRequest $request)
     {
         try {
-            if ($this->userSession->can('create', Article::class)) {
+            $user = Auth::user();
+            if ($user->can('create', Article::class)) {
                 $data = $this->articleService->saveArticleData($request);
                 return $this->successResponse($data, 'Article has been saved');
             } else {
-                return $this->errorResponse("You don't have access to create article", $e->getMessage(), HttpStatus::HTTP_UNAUTHORIZED);
+                return $this->errorResponse("You don't have access to create article", null, HttpStatus::HTTP_UNAUTHORIZED);
             }
         } catch (Exception $e) {
             return $this->errorResponse('Error', $e->getMessage(), HttpStatus::HTTP_INTERNAL_SERVER_ERROR);
@@ -118,16 +116,16 @@ class ArticleController extends BaseController
     public function update(ArticleRequest $request, Article $article)
     {
         try {
-            if ($this->userSession->can('create', Article::class)) {
-                $check = $this->articleService->getById($article->id);
-                if ( !empty($check) ) {
-                    $data = $this->articleService->updateArticle($request);
+            $user = Auth::user();
+            if ($user->can('update', $article)) {
+                if ( !empty($article) ) {
+                    $data = $this->articleService->updateArticle($request, $article->id);
                     return $this->successResponse($data, 'Success updated article data');
                 } else {
                     return $this->errorResponse('Data Invalid', null, HttpStatus::HTTP_NOT_FOUND);
                 }
             } else {
-                return $this->errorResponse("You don't have access to create article", $e->getMessage(), HttpStatus::HTTP_UNAUTHORIZED);
+                return $this->errorResponse("You don't have access to create article", null, HttpStatus::HTTP_UNAUTHORIZED);
             }
         } catch (Exception $e) {
             return $this->errorResponse('Error', $e->getMessage(), HttpStatus::HTTP_INTERNAL_SERVER_ERROR);
@@ -143,12 +141,17 @@ class ArticleController extends BaseController
     public function destroy(Article $article)
     {
         try {
-            $check = $this->articleService->getById($article->id);
-            if ( !empty($check) ) {
-                $data = $this->articleService->deleteById($article->id);
-                return $this->successResponse($data, 'Success deleted article data');
+
+            $user = Auth::user();
+            if ($user->can('delete', $article)) {
+                if ( !empty($article) ) {
+                    $data = $this->articleService->deleteById($article->id);
+                    return $this->successResponse($data, 'Success deleted article data');
+                } else {
+                    return $this->errorResponse('Data Invalid', null, HttpStatus::HTTP_NOT_FOUND);
+                }
             } else {
-                return $this->errorResponse('Data Invalid', null, HttpStatus::HTTP_NOT_FOUND);
+                return $this->errorResponse("You don't have access to create article", null, HttpStatus::HTTP_UNAUTHORIZED);
             }
         } catch (Exception $e) {
             return $this->errorResponse('Error', $e->getMessage(), HttpStatus::HTTP_INTERNAL_SERVER_ERROR);
